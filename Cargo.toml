@@ -1,0 +1,19 @@
+[package]
+name = "milton"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+pedantic = "deny"
+nursery = "deny"
+all = "deny"
+
+# Clippy rant go brrrrr...
+missing_const_for_fn = "allow"
