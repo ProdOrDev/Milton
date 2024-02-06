@@ -1,2 +1,2 @@
 # Milton
-An emulator for Microvision (aka Milton Bradley Microvision), written in rust 🦀!
+An emulator for the Microvision (aka Milton Bradley Microvision), written in rust 🦀!
