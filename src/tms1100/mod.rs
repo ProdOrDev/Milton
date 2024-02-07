@@ -322,7 +322,7 @@ impl Alu {
     ///
     /// This performs an add (with optional carry) operation.
     pub fn clock(&mut self) {
-        let carry_in = u4::from(u8::from(self.carry_in));
+        let carry_in = u4::new(u8::from(self.carry_in));
 
         let (res, c1) = self.p.overflowing_add(self.n);
         let (res, c2) = res.overflowing_add(carry_in);
