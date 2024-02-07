@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 bitfield = "0.14.0"
+arbitrary-int = "1.2.7"
 
 [lints.rust]
 unsafe_code = "forbid"
