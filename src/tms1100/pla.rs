@@ -92,6 +92,24 @@ impl Entry {
     /// Decode the TMS1100 PLA entry of the given opcode.
     #[must_use]
     pub fn decode(op: u8) -> Self {
+        const CKP: u16 = 1 << 0;
+        const YTP: u16 = 1 << 1;
+        const MTP: u16 = 1 << 2;
+        const ATN: u16 = 1 << 3;
+        const NATN: u16 = 1 << 4;
+        #[allow(unused)]
+        const MTN: u16 = 1 << 5;
+        const FTN: u16 = 1 << 6;
+        const CKN: u16 = 1 << 7;
+        const CIN: u16 = 1 << 8;
+        const NE: u16 = 1 << 9;
+        const C8: u16 = 1 << 10;
+        const STO: u16 = 1 << 11;
+        const CKM: u16 = 1 << 12;
+        const AUTA: u16 = 1 << 13;
+        const AUTY: u16 = 1 << 14;
+        const STSL: u16 = 1 << 15;
+
         match op {
             0x00 => Self(MTP | ATN | NE),
             0x01 => Self(MTP | NATN | CIN | C8),
@@ -117,37 +135,3 @@ impl Entry {
         }
     }
 }
-
-/// See the corresponding [Entry] docs for more information.
-const CKP: u16 = 1 << 0;
-/// See the corresponding [Entry] docs for more information.
-const YTP: u16 = 1 << 1;
-/// See the corresponding [Entry] docs for more information.
-const MTP: u16 = 1 << 2;
-/// See the corresponding [Entry] docs for more information.
-const ATN: u16 = 1 << 3;
-/// See the corresponding [Entry] docs for more information.
-const NATN: u16 = 1 << 4;
-/// See the corresponding [Entry] docs for more information.
-#[allow(unused)]
-const MTN: u16 = 1 << 5;
-/// See the corresponding [Entry] docs for more information.
-const FTN: u16 = 1 << 6;
-/// See the corresponding [Entry] docs for more information.
-const CKN: u16 = 1 << 7;
-/// See the corresponding [Entry] docs for more information.
-const CIN: u16 = 1 << 8;
-/// See the corresponding [Entry] docs for more information.
-const NE: u16 = 1 << 9;
-/// See the corresponding [Entry] docs for more information.
-const C8: u16 = 1 << 10;
-/// See the corresponding [Entry] docs for more information.
-const STO: u16 = 1 << 11;
-/// See the corresponding [Entry] docs for more information.
-const CKM: u16 = 1 << 12;
-/// See the corresponding [Entry] docs for more information.
-const AUTA: u16 = 1 << 13;
-/// See the corresponding [Entry] docs for more information.
-const AUTY: u16 = 1 << 14;
-/// See the corresponding [Entry] docs for more information.
-const STSL: u16 = 1 << 15;
