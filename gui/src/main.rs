@@ -1,4 +1,4 @@
-use milton::tms1100::Tms1100;
+use milton_core::tms1100::Tms1100;
 
 fn main() {
     println!("Hello, Milton!");
