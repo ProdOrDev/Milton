@@ -2,7 +2,10 @@
 
 use arbitrary_int::{u1, u11, u3, u4, u5, u6, Number};
 
-use super::{pla::Fixed, Tms1100};
+use super::{
+    pla::{Fixed, *},
+    Tms1100,
+};
 
 impl Tms1100 {
     /// Execute the fixed instruction BR.
@@ -117,107 +120,107 @@ impl Tms1100 {
 impl Tms1100 {
     /// Execute the micro-instruction 15TN.
     pub(super) fn op_ftn(&mut self) {
-        if self.micro.ftn() {
+        if self.micro.is_enabled::<FTN>() {
             self.alu.n |= u4::MAX;
         }
     }
 
     /// Execute the micro-instruction ATN.
     pub(super) fn op_atn(&mut self) {
-        if self.micro.atn() {
+        if self.micro.is_enabled::<ATN>() {
             self.alu.n |= self.a;
         }
     }
     /// Execute the micro-instruction NATN.
     pub(super) fn op_natn(&mut self) {
-        if self.micro.natn() {
+        if self.micro.is_enabled::<NATN>() {
             self.alu.n |= !self.a;
         }
     }
     /// Execute the micro-instruction CKN.
     pub(super) fn op_ckn(&mut self) {
-        if self.micro.ckn() {
+        if self.micro.is_enabled::<CKN>() {
             self.alu.n |= self.cki_bus;
         }
     }
     /// Execute the micro-instruction MTN.
     pub(super) fn op_mtn(&mut self) {
-        if self.micro.mtn() {
+        if self.micro.is_enabled::<MTN>() {
             self.alu.n |= self.ram_data;
         }
     }
 
     /// Execute the micro-instruction CKP.
     pub(super) fn op_ckp(&mut self) {
-        if self.micro.ckp() {
+        if self.micro.is_enabled::<CKP>() {
             self.alu.p |= self.cki_bus;
         }
     }
     /// Execute the micro-instruction MTP.
     pub(super) fn op_mtp(&mut self) {
-        if self.micro.mtp() {
+        if self.micro.is_enabled::<MTP>() {
             self.alu.p |= self.ram_data;
         }
     }
     /// Execute the micro-instruction YTP.
     pub(super) fn op_ytp(&mut self) {
-        if self.micro.ytp() {
+        if self.micro.is_enabled::<YTP>() {
             self.alu.p |= self.y;
         }
     }
 
     /// Execute the micro-instruction CIN.
     pub(super) fn op_cin(&mut self) {
-        if self.micro.cin() {
+        if self.micro.is_enabled::<CIN>() {
             self.alu.carry_in = true;
         }
     }
 
     /// Execute the micro-instruction C8.
     pub(super) fn op_c8(&mut self) {
-        if self.micro.c8() {
+        if self.micro.is_enabled::<C8>() {
             self.alu.status &= self.alu.carry_out;
         }
     }
 
     /// Execute the micro-instruction NE.
     pub(super) fn op_ne(&mut self) {
-        if self.micro.ne() {
+        if self.micro.is_enabled::<NE>() {
             self.alu.status &= self.alu.p != self.alu.n;
         }
     }
 
     /// Execute the micro-instruction CKM.
     pub(super) fn op_ckm(&mut self) {
-        if self.micro.ckm() {
+        if self.micro.is_enabled::<CKM>() {
             self.ram_data = self.cki_bus;
         }
     }
 
     /// Execute the micro-instruction STO.
     pub(super) fn op_sto(&mut self) {
-        if self.micro.sto() {
+        if self.micro.is_enabled::<STO>() {
             self.ram_data = self.a;
         }
     }
 
     /// Execute the micro-instruction AUTA.
     pub(super) fn op_auta(&mut self) {
-        if self.micro.auta() {
+        if self.micro.is_enabled::<AUTA>() {
             self.a = self.alu.res;
         }
     }
 
     /// Execute the micro-instruction AUTY.
     pub(super) fn op_auty(&mut self) {
-        if self.micro.auty() {
+        if self.micro.is_enabled::<AUTY>() {
             self.y = self.alu.res;
         }
     }
 
     /// Execute the micro-instruction STSL.
     pub(super) fn op_stsl(&mut self) {
-        if self.micro.stsl() {
+        if self.micro.is_enabled::<STSL>() {
             self.status_latch = self.alu.status;
         }
     }

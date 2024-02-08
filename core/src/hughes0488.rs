@@ -3,9 +3,9 @@
 //! ## Links
 //!
 //! - Random Notes: <http://studio2.org.uk/studio2/mv/HughesNotes.pdf>
-//! - Manual: <http://studio2.org.uk/studio2/mv/Hughes0488LCDDriver.pdf>
+//! - Driver Manual: <http://studio2.org.uk/studio2/mv/Hughes0488LCDDriver.pdf>
 
-use arbitrary_int::{u3, u4, Number};
+use arbitrary_int::{u3, u4};
 
 /// The 16 row output connections of the Hughes 0488.
 ///

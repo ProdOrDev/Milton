@@ -1,116 +1,102 @@
-//! Emulation of the Programmable Logic Array (PLA) used for instruction decoding.
+//! Emulation of the Programmable Logic Array (PLA) used by the TMS1100 for instruction decoding.
 
-bitfield::bitfield! {
-    /// An entry in the instruction decode PLA.
-    ///
-    /// This controls which micro-instructions are enabled for the given
-    /// opcode/instruction. However, not every instruction uses the PLA
-    /// for execution, some opcodes are decoded using a fixed (non-programmable)
-    /// logic scheme ([Fixed]).
-    #[derive(Default, Clone, Copy)]
-    pub struct Entry(u16);
-    impl Debug;
-    /// The micro-instruction CTP.
-    ///
-    /// When enabled this transfers the data on the CKI bus to the P input of the
-    /// adder.
-    pub ckp,  _:  0;
-    /// The micro-instruction YTP.
-    ///
-    /// When enabled this transfers the Y register to the P input of the adder.
-    pub ytp,  _:  1;
-    /// The micro-instruction MTP.
-    ///
-    /// When enabled this transfers the value in memory at (X, Y) to the P input
-    /// of the adder.
-    pub mtp,  _:  2;
-    /// The micro-instruction ATN.
-    ///
-    /// When enabled this transfers the accumulator to the N input of the adder.
-    pub atn,  _:  3;
-    /// The micro-instruction NATN.
-    ///
-    /// When enabled this transfers the negated value of the accumulator to the
-    /// N input of the adder.
-    pub natn, _:  4;
-    /// The micro-instruction MTN.
-    ///
-    /// When enabled this transfers the value in memory at (X, Y) to the N input
-    /// of the adder.
-    ///
-    /// This micro-instruction is slightly odd because it exists on the chip,
-    /// however none of the PLA combinations actually make use of it. My best
-    /// thought is that is was reserved for future revisions of the processor.
-    pub mtn,  _:  5;
-    /// The micro-instruction 15TN.
-    ///
-    /// When enabled this transfers the value $f to the N input of the adder.
-    pub ftn,  _:  6;
-    /// The micro-instruction CKN.
-    ///
-    /// When enabled this transfers the data on the CKI bus to the N input of
-    /// the adder.
-    pub ckn,  _:  7;
-    /// The micro-instruction CIN.
-    ///
-    /// When enabled this instructs the adder to add an additional one to the P
-    /// and N inputs.
-    pub cin,  _:  8;
-    /// The micro-instruction NE.
-    ///
-    /// When enabled this instructs the adder to compare the P and N inputs,
-    /// setting the output status of the adder to zero if they are equal.
-    pub ne,   _:  9;
-    /// The micro-instruction C8.
-    ///
-    /// When enabled this stores a potential adder carry to the internal status
-    /// latch.
-    pub c8,   _: 10;
-    /// The micro-instruction STO.
-    ///
-    /// When enabled this writes the accumulator to memory.
-    pub sto,  _: 11;
-    /// The micro-instruction CKM.
-    ///
-    /// When enabled this writes the data on the CKI bus to memory.
-    pub ckm,  _: 12;
-    /// The micro-instruction AUTA.
-    ///
-    /// When enabled this stores the result of the adder into the accumulator.
-    pub auta, _: 13;
-    /// The micro-instruction AUTY.
-    ///
-    /// When enabled this stores the result of the adder into the Y register.
-    pub auty, _: 14;
-    /// The micro-instruction STSL.
-    ///
-    /// When enabled this stores the output status of the adder into the
-    /// internal status latch.
-    pub stsl, _: 15;
-}
+/// The micro-instruction CKP.
+///
+/// When enabled this transfers the data on the CKI bus to the P input of the
+/// adder.
+pub const CKP: u16 = 1 << 0;
+/// The micro-instruction YTP.
+///
+/// When enabled this transfers the Y register to the P input of the adder.
+pub const YTP: u16 = 1 << 1;
+/// The micro-instruction MTP.
+///
+/// When enabled this transfers the value in memory at (X, Y) to the P input
+/// of the adder.
+pub const MTP: u16 = 1 << 2;
+/// The micro-instruction ATN.
+///
+/// When enabled this transfers the accumulator to the N input of the adder.
+pub const ATN: u16 = 1 << 3;
+/// The micro-instruction NATN.
+///
+/// When enabled this transfers the negated value of the accumulator to the
+/// N input of the adder.
+pub const NATN: u16 = 1 << 4;
+/// The micro-instruction MTN.
+///
+/// When enabled this transfers the value in memory at (X, Y) to the N input
+/// of the adder.
+///
+/// This micro-instruction is slightly odd because it exists on the chip,
+/// however none of the PLA combinations actually make use of it. My best
+/// thought is that is was reserved for future revisions of the processor.
+pub const MTN: u16 = 1 << 5;
+/// The micro-instruction 15TN.
+///
+/// When enabled this transfers the value $f to the N input of the adder.
+pub const FTN: u16 = 1 << 6;
+/// The micro-instruction CKN.
+///
+/// When enabled this transfers the data on the CKI bus to the N input of
+/// the adder.
+pub const CKN: u16 = 1 << 7;
+/// The micro-instruction CIN.
+///
+/// When enabled this instructs the adder to add an additional one to the P
+/// and N inputs.
+pub const CIN: u16 = 1 << 8;
+/// The micro-instruction NE.
+///
+/// When enabled this instructs the adder to compare the P and N inputs,
+/// setting the output status of the adder to zero if they are equal.
+pub const NE: u16 = 1 << 9;
+/// The micro-instruction C8.
+///
+/// When enabled this stores a potential adder carry to the internal status
+/// latch.
+pub const C8: u16 = 1 << 10;
+/// The micro-instruction STO.
+///
+/// When enabled this writes the accumulator to memory.
+pub const STO: u16 = 1 << 11;
+/// The micro-instruction CKM.
+///
+/// When enabled this writes the data on the CKI bus to memory.
+pub const CKM: u16 = 1 << 12;
+/// The micro-instruction AUTA.
+///
+/// When enabled this stores the result of the adder into the accumulator.
+pub const AUTA: u16 = 1 << 13;
+/// The micro-instruction AUTY.
+///
+/// When enabled this stores the result of the adder into the Y register.
+pub const AUTY: u16 = 1 << 14;
+/// The micro-instruction STSL.
+///
+/// When enabled this stores the output status of the adder into the
+/// internal status latch.
+pub const STSL: u16 = 1 << 15;
+
+/// An entry in the instruction decode PLA.
+///
+/// This controls which micro-instructions are enabled for the given
+/// opcode/instruction. However, not every instruction uses the PLA
+/// for execution, some opcodes are decoded using a fixed (non-programmable)
+/// logic scheme ([Fixed]).
+#[derive(Default, Debug, Clone, Copy)]
+pub struct Entry(u16);
 
 impl Entry {
+    /// Check if this PLA entry enables a specific microcode instruction.
+    #[must_use]
+    pub fn is_enabled<const N: u16>(&self) -> bool {
+        self.0 & N != 0
+    }
+
     /// Decode the TMS1100 PLA entry of the given opcode.
     #[must_use]
     pub fn decode(op: u8) -> Self {
-        const CKP: u16 = 1 << 0;
-        const YTP: u16 = 1 << 1;
-        const MTP: u16 = 1 << 2;
-        const ATN: u16 = 1 << 3;
-        const NATN: u16 = 1 << 4;
-        #[allow(unused)]
-        const MTN: u16 = 1 << 5;
-        const FTN: u16 = 1 << 6;
-        const CKN: u16 = 1 << 7;
-        const CIN: u16 = 1 << 8;
-        const NE: u16 = 1 << 9;
-        const C8: u16 = 1 << 10;
-        const STO: u16 = 1 << 11;
-        const CKM: u16 = 1 << 12;
-        const AUTA: u16 = 1 << 13;
-        const AUTY: u16 = 1 << 14;
-        const STSL: u16 = 1 << 15;
-
         match op {
             0x00 => Self(MTP | ATN | NE),
             0x01 => Self(MTP | NATN | CIN | C8),
