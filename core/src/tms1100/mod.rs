@@ -6,6 +6,7 @@
 //! - Data Manual: <http://www.bitsavers.org/components/ti/TMS1000/TMS_1000_Series_Data_Manual_Dec76.pdf>
 //! - Programmers Reference: <https://en.wikichip.org/w/images/f/ff/TMS1000_Series_Programmer%27s_reference_manual.pdf>
 
+mod execution;
 pub mod mem;
 pub mod pla;
 
@@ -37,6 +38,7 @@ pub struct Tms1100 {
     pub x: u3,
     /// The address register Y.
     pub y: u4,
+
     /// The program counter PC.
     pub pc: u6,
     /// The subroutine return register SR.
@@ -47,6 +49,7 @@ pub struct Tms1100 {
     pub pa: u4,
     /// The page buffer register PB.
     pub pb: u4,
+
     /// The chapter address latch CA.
     ///
     /// This stores the current chapter data.
@@ -62,6 +65,7 @@ pub struct Tms1100 {
     /// (CA -> CS). CS transfers data back to CA when the return from subroutine (RETN)
     /// instruction occurs.
     pub cs: u1,
+
     /// The call latch C.
     pub call_latch: bool,
     /// The status latch S.
@@ -78,6 +82,7 @@ pub struct Tms1100 {
     pub fixed: Fixed,
     /// The micro-instructions of the current opcode.
     pub micro: Entry,
+
     /// The CKI data bus.
     ///
     /// The contents of this bus vary depending on the currently executing opcode.

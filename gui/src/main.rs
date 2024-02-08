@@ -1,17 +1,30 @@
 //! This is (or will be) a graphical frontend for Milton.
 
-use milton_core::tms1100::Tms1100;
+// Hide console window on Windows.
+#![windows_subsystem = "windows"]
 
-fn main() {
-    println!("Hello, Milton!");
+use eframe::{egui, NativeOptions};
 
-    let mut tms = Tms1100::new();
+fn main() -> Result<(), eframe::Error> {
+    eframe::run_native(
+        "Milton",
+        NativeOptions::default(),
+        Box::new(|_| Box::<Milton>::default()),
+    )
+}
 
-    tms.rom.data[0] = 0x78;
+#[derive(Default)]
+struct Milton {}
 
-    for _ in 0..(2 * 6) {
-        tms.clock();
+impl eframe::App for Milton {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::TopBottomPanel::top("menubar").show(ctx, |ui| {
+            egui::menu::bar(ui, |ui| {
+                ui.menu_button("TMS1100", |ui| {
+                    let _ = ui.button("Foo");
+                    let _ = ui.button("Bar");
+                });
+            });
+        });
     }
-
-    println!("The value of the accumlator is: {}", tms.a);
 }
