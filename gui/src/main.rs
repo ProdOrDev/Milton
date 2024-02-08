@@ -1,3 +1,5 @@
+//! This is (or will be) a graphical frontend for Milton.
+
 use milton_core::tms1100::Tms1100;
 
 fn main() {

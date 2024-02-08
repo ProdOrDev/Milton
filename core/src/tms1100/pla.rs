@@ -222,7 +222,7 @@ impl Fixed {
             0x34..=0x37 => Self::Rbit,
             0x01..=0x1f => Self::Ldp,
             0x28..=0x2f => Self::Ldx,
-            0x80..=0xaf => Self::Br,
+            0x80..=0xbf => Self::Br,
             0xc0..=0xff => Self::Call,
             _ => Self::None,
         }
