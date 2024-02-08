@@ -12,15 +12,6 @@ pub struct Rom {
 }
 
 impl Rom {
-    /// Create a new (uninitialized) ROM chip.
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
-            data: [0; 0x800],
-            addr: u11::new(0),
-        }
-    }
-
     /// Read from this ROM chip at its specified memory address.
     #[must_use]
     pub fn read(&self) -> u8 {
@@ -29,8 +20,12 @@ impl Rom {
 }
 
 impl Default for Rom {
+    /// Create a new (uninitialized) ROM chip.
     fn default() -> Self {
-        Self::new()
+        Self {
+            data: [0; 0x800],
+            addr: u11::new(0),
+        }
     }
 }
 
@@ -44,15 +39,6 @@ pub struct Ram {
 }
 
 impl Ram {
-    /// Create a new (uninitialized) RAM chip.
-    #[must_use]
-    pub fn new() -> Self {
-        Self {
-            data: [u4::new(0); 0x80],
-            addr: u7::new(0),
-        }
-    }
-
     /// Read from this RAM chip at its specified memory address.
     #[must_use]
     pub fn read(&self) -> u4 {
@@ -66,7 +52,11 @@ impl Ram {
 }
 
 impl Default for Ram {
+    /// Create a new (uninitialized) RAM chip.
     fn default() -> Self {
-        Self::new()
+        Self {
+            data: [u4::new(0); 0x80],
+            addr: u7::new(0),
+        }
     }
 }

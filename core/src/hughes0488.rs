@@ -75,7 +75,7 @@ pub struct Hughes0488 {
 }
 
 impl Hughes0488 {
-    /// Update the Hughes 0488 LCD driver.
+    /// Update this Hughes 0488 LCD driver.
     pub fn clock(&mut self, data: Data, pulse: LatchPulse, not_clock: NotDataClock) {
         // On the rising edge of !DATA CLK, bump the address latch counter.
         if !self.not_clock.0 && not_clock.0 {

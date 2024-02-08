@@ -101,12 +101,6 @@ pub struct Tms1100 {
 }
 
 impl Tms1100 {
-    /// Create a new TMS1100 micro-processor.
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Execute a single sub-instruction cycle.
     pub fn clock(&mut self) {
         #[allow(clippy::match_same_arms)]
@@ -124,7 +118,7 @@ impl Tms1100 {
                 self.ram_data = self.ram.read();
 
                 // Clear the inputs and outputs of the ALU.
-                self.alu.reset();
+                self.alu = Alu::default();
             }
             Counter::Cycle1 => {
                 // Update the ROM address.
@@ -312,18 +306,7 @@ pub struct Alu {
 }
 
 impl Alu {
-    /// Create a new ALU for the TMS1100.
-    #[must_use]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Reset the current state of the ALU.
-    pub fn reset(&mut self) {
-        *self = Self::default();
-    }
-
-    /// Clock the ALU.
+    /// Update the ALU.
     ///
     /// This performs an add (with optional carry) operation.
     pub fn clock(&mut self) {
