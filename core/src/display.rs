@@ -20,7 +20,7 @@ pub enum Pixel {
 }
 
 /// A 16x16 LCD pixel matrix display.
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct Lcd {
     /// The raw pixel data.
     pub pixels: [[Pixel; 16]; 16],
@@ -93,15 +93,6 @@ impl Lcd {
                     Pixel::Off => Pixel::Off,
                 }
             }
-        }
-    }
-}
-
-impl Default for Lcd {
-    fn default() -> Self {
-        Self {
-            pixels: [[Pixel::Off; 16]; 16],
-            dirty: false,
         }
     }
 }
