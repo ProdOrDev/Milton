@@ -426,7 +426,7 @@ impl Counter {
 
 /// The R\[0-10\] pin outputs.
 #[derive(Default, Debug, Clone, Copy)]
-pub struct ROutput(pub u11);
+pub struct OutputR(pub u11);
 
 /// The O\[0-7\] pin outputs.
 ///
@@ -435,21 +435,21 @@ pub struct ROutput(pub u11);
 /// pins. To make use of this value it must be put through your
 /// custom PLA first.
 #[derive(Default, Debug, Clone, Copy)]
-pub struct OOutput(pub u5);
+pub struct OutputO(pub u5);
 
 /// The K\[1,2,4,8\] pin inputs.
 #[derive(Default, Debug, Clone, Copy)]
-pub struct KInput(pub u4);
+pub struct InputK(pub u4);
 
 /// An emulated TMS1100 micro-processor.
 #[derive(Default, Debug, Clone)]
 pub struct Tms1100 {
     /// The R\[0-10\] pin outputs.
-    pub r: ROutput,
+    pub r: OutputR,
     /// The O\[0-7\] pin outputs.
-    pub o: OOutput,
+    pub o: OutputO,
     /// The K\[1,2,4,8\] pin inputs.
-    pub k: KInput,
+    pub k: InputK,
 
     /// The RAM address latches.
     pub ram_addr: RamAddr,

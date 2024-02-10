@@ -22,6 +22,16 @@ impl Rom {
     pub fn read(&self, addr: u11) -> u8 {
         self.data[addr.value() as usize & 0x7ff]
     }
+
+    /// Return the checksum of this ROM image.
+    #[must_use]
+    pub fn checksum(&self) -> u16 {
+        self.data
+            .iter()
+            .copied()
+            .map(u16::from)
+            .fold(0, u16::wrapping_add)
+    }
 }
 
 /// The onboard 64b (128 x 4bit) Random Access Memory (RAM) chip.
