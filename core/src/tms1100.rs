@@ -1,6 +1,6 @@
 //! A (mostly) cycle-accurate implementation of the TMS1100 micro-processor.
 //!
-//! The cycle-accurate part only really applies to external inputs.
+//! The cycle-accurate part only really applies to external signal output/input(s).
 //!
 //! ## Links
 //!
