@@ -5,7 +5,7 @@ use arbitrary_int::u4;
 
 /// The turn percentage of a rotary controller.
 #[derive(Default, Debug, Clone, Copy)]
-pub struct Percentage(pub(crate) u8);
+pub struct Percentage(pub(crate) usize);
 
 impl Percentage {
     /// Create a new rotary percentage value.
@@ -14,13 +14,13 @@ impl Percentage {
     /// in terms of `0%` to `100%`. If the value returned is greater than `100`
     /// it will be truncated back to `100`.
     #[must_use]
-    pub fn new(amount: u8) -> Percentage {
+    pub fn new(amount: usize) -> Percentage {
         Percentage(amount.min(100))
     }
 
     /// Return the inner percentage value.
     #[must_use]
-    pub fn get(&self) -> u8 {
+    pub fn get(&self) -> usize {
         self.0
     }
 }
