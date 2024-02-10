@@ -223,7 +223,10 @@ pub mod pla {
     }
 }
 
-use crate::memory::{Ram, Rom};
+use crate::{
+    hughes0488::{LatchPulse, NotDataClock},
+    memory::{Ram, Rom},
+};
 use arbitrary_int::{u1, u11, u3, u4, u5, u6, u7, Number};
 use pla::{Entry, Fixed, *};
 
@@ -427,6 +430,39 @@ impl Counter {
 /// The R\[0-10\] pin outputs.
 #[derive(Default, Debug, Clone, Copy)]
 pub struct OutputR(pub u11);
+
+impl OutputR {
+    /// Return the value of the LCD drivers latch pulse line.
+    #[must_use]
+    pub fn latch_pulse(&self) -> LatchPulse {
+        LatchPulse(self.0.value() >> 6 & 1 != 0)
+    }
+
+    /// Return the value of the LCD drivers not data clock line.
+    #[must_use]
+    pub fn not_clock(&self) -> NotDataClock {
+        NotDataClock(self.0.value() >> 7 & 1 != 0)
+    }
+
+    /// Return the value of the speaker line.
+    #[must_use]
+    pub fn speaker(&self) -> bool {
+        self.0.value() & 1 != 0
+    }
+
+    /// Return the value of the rotary control line.
+    #[must_use]
+    pub fn rotary_control(&self) -> bool {
+        self.0.value() >> 2 & 1 != 0
+    }
+
+    /// Check if the nth keyboard column is selected.
+    #[must_use]
+    pub fn keyboard<const N: usize>(&self) -> bool {
+        assert!(N < 3);
+        self.0.value() >> (10 - N) & 1 != 0
+    }
+}
 
 /// The O\[0-7\] pin outputs.
 ///

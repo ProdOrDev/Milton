@@ -76,7 +76,7 @@ impl Console {
         K: Keyboard,
         R: Rotary,
     {
-        // The amount of microseconds every hz at 100khz takes.
+        // The amount of microseconds every hz (clock) at 100khz takes.
         self.elapsed += 10;
 
         // Update the TMS1100 micro-processor.
@@ -85,15 +85,15 @@ impl Console {
         // Update the K input of the TMS1100.
         let mut new = u4::new(0);
         // The 10th pin of the R output connects to the left column of the keyboard.
-        if self.cpu.r.0.value() >> 10 & 1 != 0 {
+        if self.cpu.r.keyboard::<0>() {
             new |= read_column(hardware.keyboard, 0);
         }
         // The 9th pin of the R output connects to the middle column of the keyboard.
-        if self.cpu.r.0.value() >> 9 & 1 != 0 {
+        if self.cpu.r.keyboard::<1>() {
             new |= read_column(hardware.keyboard, 1);
         }
         // The 8th pin of the R output connects to the right column of the keyboard.
-        if self.cpu.r.0.value() >> 8 & 1 != 0 {
+        if self.cpu.r.keyboard::<2>() {
             new |= read_column(hardware.keyboard, 2);
         }
         if hardware.cartridge_specific.rotary_enabled {
@@ -109,12 +109,12 @@ impl Console {
         // Update the Hughes 0488 LCD driver.
         self.driver.clock(
             hardware.cartridge_specific.output_pla.modify(self.cpu.o),
-            LatchPulse(self.cpu.r.0.value() >> 6 & 1 != 0),
-            NotDataClock(self.cpu.r.0.value() >> 7 & 1 != 0),
+            self.cpu.r.latch_pulse(),
+            self.cpu.r.not_clock(),
         );
 
         // Update the speaker line.
-        let new = self.cpu.r.0.value() & 1 != 0;
+        let new = self.cpu.r.speaker();
 
         // On a 0->1 transition, update the speaker timings.
         if !self.sound_status && new {
@@ -128,7 +128,7 @@ impl Console {
         self.sound_status = new;
 
         // Update the rotary control line.
-        let new = self.cpu.r.0.value() >> 2 & 1 != 0;
+        let new = self.cpu.r.rotary_control();
 
         // On a 0->1 transition, update the rotary charge timings.
         if !self.rotary_status && new {
