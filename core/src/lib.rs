@@ -31,7 +31,7 @@ pub struct Console {
     /// The rotary controller.
     pub rotary: Rotary,
     /// The total amount of microseconds elapsed.
-    elapsed: Ms,
+    pub elapsed: Ms,
 }
 
 impl Console {
