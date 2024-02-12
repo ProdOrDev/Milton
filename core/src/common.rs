@@ -1,6 +1,6 @@
 //! Common data types and utilities.
 
-use crate::{buzzer, keyboard, lcd, rotary, settings::Settings};
+use crate::{buzzer, keyboard, lcd, rotary};
 
 /// A boolean input/output signal line.
 ///
@@ -53,6 +53,4 @@ where
     pub keyboard: &'a K,
     /// The rotary controller/paddle.
     pub rotary: &'a R,
-    /// The cartridge-specific settings.
-    pub settings: Settings,
 }

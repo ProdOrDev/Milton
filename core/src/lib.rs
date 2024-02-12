@@ -1,6 +1,8 @@
-#![doc = include_str!("../../README.md")]
+//! The frontend agnostic, #\[no-std\], emulator core of Milton.
+
 #![forbid(missing_docs)]
 #![allow(clippy::new_without_default)]
+#![no_std]
 
 pub mod buzzer;
 pub mod common;
@@ -88,7 +90,7 @@ impl Console {
         self.cpu.k.update(
             self.cpu.r,
             self.elapsed,
-            settings,
+            settings.rotary_enabled,
             &self.rotary,
             hardware.keyboard,
         );

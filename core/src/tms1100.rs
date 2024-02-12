@@ -265,7 +265,6 @@ use crate::{
     lcd::{LatchPulse, NotDataClock},
     memory::{Ram, RamAddr, Rom, RomAddr},
     rotary::{ChargePulse, Rotary},
-    settings::Settings,
 };
 use arbitrary_int::{u1, u11, u3, u4, u5, u6, Number};
 use pla::{Entry, Fixed, *};
@@ -336,7 +335,7 @@ impl InputK {
         &mut self,
         r: OutputR,
         elapsed: Ms,
-        settings: Settings,
+        rotary_enabled: bool,
         rotary: &Rotary,
         keyboard: &K,
     ) where
@@ -368,7 +367,7 @@ impl InputK {
         if r.nth_keyboard::<2>() {
             self.0 |= read_column(keyboard, [Key::At2x0, Key::At2x1, Key::At2x2, Key::At2x3]);
         }
-        if settings.rotary_enabled {
+        if rotary_enabled {
             self.0 &= u4::new(7);
             // If the charging circuit of the rotary controller has ended (timed out)
             // set the K8 line.
