@@ -4,6 +4,7 @@ resolver = "2"
 
 members = [
     "core",
+    "gui",
 ]
 
 [workspace.lints.rust]

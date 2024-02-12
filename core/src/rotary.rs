@@ -79,7 +79,7 @@ impl Percentage {
 
 /// An abstract (frontend agnostic) rotary controller.
 pub trait Agnostic {
-    /// Return the turn percentage of this controller.
+    /// Return the current turn percentage of this controller.
     #[must_use]
     fn turn(&self) -> Percentage;
 }

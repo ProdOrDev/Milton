@@ -47,9 +47,9 @@ pub struct Rom {
 }
 
 impl Rom {
-    /// Create a new (data-zeroed) 2kb ROM chip.
+    /// Create a new (zeroed) 2kb ROM chip.
     #[must_use]
-    pub fn new_zeroed() -> Self {
+    pub fn new() -> Self {
         Self { data: [0; 0x800] }
     }
 
@@ -106,25 +106,21 @@ pub struct Ram {
 }
 
 impl Ram {
-    /// Create a new (data-zeroed) 64b RAM chip.
+    /// Create a new (zeroed) 64b RAM chip.
     #[must_use]
-    pub fn new_zeroed() -> Self {
+    pub fn new() -> Self {
         Self {
             data: [u4::new(0); 0x80],
         }
     }
 
-    /// Create a new (data-randomized) 64b RAM chip.
-    #[must_use]
-    pub fn new_random() -> Self {
+    /// Randomize the data contained on this RAM chip.
+    pub fn randomize(&mut self) {
         let mut rng = thread_rng();
-        let mut rom = Self::new_zeroed();
 
-        for val in rom.data.iter_mut() {
+        for val in self.data.iter_mut() {
             *val = u4::new(rng.gen_range(0..16))
         }
-
-        rom
     }
 
     /// Read from this RAM chip at the specified address.
