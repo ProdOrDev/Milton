@@ -53,7 +53,7 @@ impl OutputPla {
     }
 }
 
-/// The cartridge-specific settings of certain features.
+/// The cartridge-specific settings.
 #[derive(Debug, Clone, Copy)]
 pub struct Settings {
     /// The charge/pulse information of the rotary controller.

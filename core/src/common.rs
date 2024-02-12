@@ -1,5 +1,7 @@
 //! Common data types and utilities.
 
+use crate::{buzzer, keyboard, lcd, rotary, settings::Settings};
+
 /// A boolean input/output signal line.
 ///
 /// This is used for inter-chip communication and to transfer state from one
@@ -34,3 +36,23 @@ impl Line {
 
 /// A unit of time, measured in **micro**-seconds.
 pub type Ms = usize;
+
+/// An abstract (frontend agnostic) hardware interface.
+pub struct Hardware<'a, L, B, K, R>
+where
+    L: lcd::Agnostic,
+    B: buzzer::Agnostic,
+    K: keyboard::Agnostic,
+    R: rotary::Agnostic,
+{
+    /// The 16x16 LCD display.
+    pub lcd: &'a mut L,
+    /// The Piezo buzzer.
+    pub buzzer: &'a mut B,
+    /// The 3x4 keyboard.
+    pub keyboard: &'a K,
+    /// The rotary controller/paddle.
+    pub rotary: &'a R,
+    /// The cartridge-specific settings.
+    pub settings: Settings,
+}

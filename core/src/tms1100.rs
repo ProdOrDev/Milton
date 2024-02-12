@@ -258,7 +258,15 @@ pub mod pla {
     }
 }
 
-use crate::memory::{Ram, RamAddr, Rom, RomAddr};
+use crate::{
+    buzzer::BuzzerPulse,
+    common::Ms,
+    keyboard::{self, Key},
+    lcd::{LatchPulse, NotDataClock},
+    memory::{Ram, RamAddr, Rom, RomAddr},
+    rotary::{ChargePulse, Rotary},
+    settings::Settings,
+};
 use arbitrary_int::{u1, u11, u3, u4, u5, u6, Number};
 use pla::{Entry, Fixed, *};
 
@@ -268,6 +276,44 @@ use pla::{Entry, Fixed, *};
 /// such as the rotary controller, Piezo buzzer, LCD driver, etc. etc.
 #[derive(Debug, Clone, Copy)]
 pub struct OutputR(pub u11);
+
+impl OutputR {
+    /// Return the latch pulse line of the LCD driver.
+    #[must_use]
+    pub fn latch_pulse(&self) -> LatchPulse {
+        LatchPulse::new(self.0.value() >> 6 & 1 != 0)
+    }
+
+    /// Return the not data clock line of the LCD driver.
+    #[must_use]
+    pub fn not_clock(&self) -> NotDataClock {
+        NotDataClock::new(self.0.value() >> 7 & 1 != 0)
+    }
+
+    /// Return the buzzer pulse line.
+    #[must_use]
+    pub fn buzzer_pulse(&self) -> BuzzerPulse {
+        BuzzerPulse::new(self.0.value() & 1 != 0)
+    }
+
+    /// Return the rotary charge line.
+    #[must_use]
+    pub fn rotary_charge(&self) -> ChargePulse {
+        ChargePulse::new(self.0.value() >> 2 & 1 != 0)
+    }
+
+    /// Check if the nth keyboard column is selected to be scanned.
+    ///
+    /// ## Panics
+    ///
+    /// This will panic if the associated constant `N` is not within the
+    /// range of `0..=2`.
+    #[must_use]
+    pub fn nth_keyboard<const N: usize>(&self) -> bool {
+        assert!(N < 3);
+        self.0.value() >> (10 - N) & 1 != 0
+    }
+}
 
 /// The 5-bit pin outputs O\[0-4\].
 ///
@@ -283,6 +329,55 @@ pub struct OutputO(pub u5);
 /// controller, if it still has charge enabled.
 #[derive(Debug, Clone, Copy)]
 pub struct InputK(pub u4);
+
+impl InputK {
+    /// Update this input with the correct data.
+    pub fn update<K>(
+        &mut self,
+        r: OutputR,
+        elapsed: Ms,
+        settings: Settings,
+        rotary: &Rotary,
+        keyboard: &K,
+    ) where
+        K: keyboard::Agnostic,
+    {
+        /// Read a column of keys as a 4-bit number from the given keyboard.
+        fn read_column<K>(kb: &K, keys: [Key; 4]) -> u4
+        where
+            K: keyboard::Agnostic,
+        {
+            let k1 = if kb.get(keys[0]) { 8 } else { 0 };
+            let k2 = if kb.get(keys[1]) { 4 } else { 0 };
+            let k3 = if kb.get(keys[2]) { 2 } else { 0 };
+            let k4 = if kb.get(keys[3]) { 1 } else { 0 };
+            u4::new(k1 | k2 | k3 | k4)
+        }
+
+        self.0 = u4::MIN;
+
+        // The 10th pin of the R output connects to the left column of the keyboard.
+        if r.nth_keyboard::<0>() {
+            self.0 |= read_column(keyboard, [Key::At0x0, Key::At0x1, Key::At0x2, Key::At0x3]);
+        }
+        // The 9th pin of the R output connects to the middle column of the keyboard.
+        if r.nth_keyboard::<1>() {
+            self.0 |= read_column(keyboard, [Key::At1x0, Key::At1x1, Key::At1x2, Key::At1x3]);
+        }
+        // The 8th pin of the R output connects to the right column of the keyboard.
+        if r.nth_keyboard::<2>() {
+            self.0 |= read_column(keyboard, [Key::At2x0, Key::At2x1, Key::At2x2, Key::At2x3]);
+        }
+        if settings.rotary_enabled {
+            self.0 &= u4::new(7);
+            // If the charging circuit of the rotary controller has ended (timed out)
+            // set the K8 line.
+            if rotary.charge.value() && rotary.charge_end < elapsed {
+                self.0 |= u4::new(8);
+            }
+        }
+    }
+}
 
 /// The Arithmetic Logic Unit (ALU) of the TMS1100.
 #[derive(Debug, Clone)]
