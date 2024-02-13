@@ -662,7 +662,7 @@ impl Tms1100 {
 
     /// Execute the first set of fixed instructions.
     ///
-    /// These instructions are branch, call and return.
+    /// These instructions include branch, call and return.
     fn exec_fixed_1(&mut self) {
         match self.fixed {
             Fixed::Br if self.flags.status => {
@@ -702,7 +702,7 @@ impl Tms1100 {
 
     /// Execute the second set of fixed instructions.
     ///
-    /// These instructions include every fixed instruction expect branch, call or return.
+    /// These instructions include every fixed instruction expect branch, call and return.
     fn exec_fixed_2(&mut self) {
         match self.fixed {
             Fixed::Comc => {
