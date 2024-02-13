@@ -18,7 +18,7 @@ use common::{Hardware, Ms};
 use lcd::Hughes0488;
 use memory::{Ram, Rom};
 use rotary::Rotary;
-use settings::Settings;
+use settings::CartridgeSpecific;
 use tms1100::Tms1100;
 
 /// An emulated Milton Bradley Microvision console/handheld.
@@ -72,7 +72,7 @@ impl Console {
         &mut self,
         rom: &Rom,
         ram: &mut Ram,
-        settings: Settings,
+        settings: CartridgeSpecific,
         hardware: Hardware<L, B, K, R>,
     ) where
         L: lcd::Agnostic,
@@ -86,9 +86,12 @@ impl Console {
         // Update the TMS1100 micro-processor.
         self.cpu.clock(rom, ram);
 
+        // The R output of the TMS1100.
+        let r = self.cpu.r;
+
         // Update the K input of the TMS1100.
         self.cpu.k.update(
-            self.cpu.r,
+            r,
             self.elapsed,
             settings.rotary_enabled,
             &self.rotary,
@@ -98,17 +101,17 @@ impl Console {
         // Update the Hughes 0488 LCD driver.
         self.driver.clock(
             settings.output_pla.modify(self.cpu.o),
-            self.cpu.r.latch_pulse(),
-            self.cpu.r.not_clock(),
+            r.latch_pulse(),
+            r.not_clock(),
             hardware.lcd,
         );
 
         // Update the Piezo buzzer.
-        self.buzzer.clock(self.cpu.r.buzzer_pulse(), self.elapsed);
+        self.buzzer.clock(r.buzzer_pulse(), self.elapsed);
 
         // Update the rotary controller.
         self.rotary.clock(
-            self.cpu.r.rotary_charge(),
+            r.rotary_charge(),
             self.elapsed,
             settings.charge,
             hardware.rotary,

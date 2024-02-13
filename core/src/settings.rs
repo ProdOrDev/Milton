@@ -55,7 +55,7 @@ impl OutputPla {
 
 /// The cartridge-specific settings.
 #[derive(Debug, Clone, Copy)]
-pub struct Settings {
+pub struct CartridgeSpecific {
     /// The charge/pulse information of the rotary controller.
     pub charge: Charge,
     /// The decode PLA for the O output of the TMS1100.
@@ -64,7 +64,7 @@ pub struct Settings {
     pub rotary_enabled: bool,
 }
 
-impl Default for Settings {
+impl Default for CartridgeSpecific {
     fn default() -> Self {
         Self {
             charge: Default::default(),
