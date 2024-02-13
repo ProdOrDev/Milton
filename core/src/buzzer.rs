@@ -60,7 +60,7 @@ impl Buzzer {
     {
         if self.pulse_times >= 2 {
             let period = self.end - self.start;
-            let pitch = (self.pulse_times - 1) * 1000000 / period;
+            let pitch = (self.pulse_times - 1) * 1_000_000 / period;
             if (50..2400).contains(&pitch) {
                 frontend.set_pitch(pitch);
                 frontend.enable();
@@ -84,7 +84,7 @@ pub trait Agnostic {
 
     /// Set the pitch (or frequency) of this buzzer.
     ///
-    /// This is always followed by a call to [Agnostic::enable] so sound
+    /// This is always followed by a call to [`Agnostic::enable`] so sound
     /// could be enabled here if a framework deems it necessary.
     fn set_pitch(&mut self, pitch: usize);
 }

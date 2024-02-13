@@ -118,8 +118,8 @@ impl Ram {
     pub fn randomize(&mut self) {
         let mut rng = thread_rng();
 
-        for val in self.data.iter_mut() {
-            *val = u4::new(rng.gen_range(0..16))
+        for val in &mut self.data {
+            *val = u4::new(rng.gen_range(0..16));
         }
     }
 

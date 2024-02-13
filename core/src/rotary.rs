@@ -65,9 +65,9 @@ impl Percentage {
     /// If the given value does not fall within the range of `0..=100`, e.g. the
     /// value is greater than `100`, this function will panic.
     #[must_use]
-    pub fn new(amount: usize) -> Percentage {
+    pub fn new(amount: usize) -> Self {
         assert!(amount <= 100, "The given percentage value is too large");
-        Percentage(amount)
+        Self(amount)
     }
 
     /// Return the inner value of this percentage.

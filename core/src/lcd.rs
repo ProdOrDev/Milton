@@ -40,7 +40,7 @@ pub type LatchPulse = Line;
 
 /// The not data clock input line.
 ///
-/// When this line is pulled low (set to 0), the value on the [DataLine]
+/// When this line is pulled low (set to 0), the value on the [`DataLine`]
 /// is written to the next available address latch.
 pub type NotDataClock = Line;
 
@@ -106,7 +106,7 @@ impl Hughes0488 {
         A: Agnostic,
     {
         if self.not_clock.update_rising(not_clock) {
-            self.latches.counter = self.latches.counter.wrapping_add(u3::new(1))
+            self.latches.counter = self.latches.counter.wrapping_add(u3::new(1));
         }
 
         self.pulse = pulse;
@@ -118,11 +118,11 @@ impl Hughes0488 {
         if self.pulse.value() && self.not_clock.value() {
             self.row.0 = self.latches.data[0..4]
                 .iter()
-                .fold(0u16, |acc, x| (acc << 4) | x.value() as u16);
+                .fold(0u16, |acc, x| (acc << 4) | u16::from(x.value()));
 
             self.col.0 = self.latches.data[4..8]
                 .iter()
-                .fold(0u16, |acc, x| (acc << 4) | x.value() as u16);
+                .fold(0u16, |acc, x| (acc << 4) | u16::from(x.value()));
 
             // If all the row indexes or the column data are zero, nothing will
             // be updated.

@@ -1,7 +1,6 @@
 //! The frontend agnostic, #\[no-std\], emulator core of Milton.
 
 #![forbid(missing_docs)]
-#![allow(clippy::new_without_default)]
 #![no_std]
 
 pub mod buzzer;
@@ -55,7 +54,7 @@ impl Console {
     /// this function exists to simply clarify cases where the console
     /// is effectively reset for an event, e.g. loading a new ROM.
     pub fn reset(&mut self) {
-        *self = Self::new()
+        *self = Self::new();
     }
 
     /// Update this console.
@@ -68,12 +67,13 @@ impl Console {
     ///
     /// This function should be called at a rate of 100khz, effectively every
     /// 10 **micro**-seconds.
+    #[allow(clippy::similar_names)]
     pub fn clock<L, B, K, R>(
         &mut self,
         rom: &Rom,
         ram: &mut Ram,
         settings: CartridgeSpecific,
-        hardware: Hardware<L, B, K, R>,
+        hardware: &mut Hardware<L, B, K, R>,
     ) where
         L: lcd::Agnostic,
         B: buzzer::Agnostic,
@@ -127,7 +127,7 @@ impl Console {
     /// ## Timing
     ///
     /// This function should be called at the end of every frame.
-    pub fn sync<L, B, K, R>(&mut self, hardware: Hardware<L, B, K, R>)
+    pub fn sync<L, B, K, R>(&mut self, hardware: &mut Hardware<L, B, K, R>)
     where
         L: lcd::Agnostic,
         B: buzzer::Agnostic,

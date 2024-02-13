@@ -36,18 +36,18 @@ impl Key {
     #[must_use]
     pub fn pos(&self) -> (usize, usize) {
         match self {
-            Key::At0x0 => (0, 0),
-            Key::At0x1 => (1, 0),
-            Key::At0x2 => (2, 0),
-            Key::At0x3 => (3, 0),
-            Key::At1x0 => (0, 1),
-            Key::At1x1 => (1, 1),
-            Key::At1x2 => (2, 1),
-            Key::At1x3 => (3, 1),
-            Key::At2x0 => (0, 2),
-            Key::At2x1 => (1, 2),
-            Key::At2x2 => (2, 2),
-            Key::At2x3 => (3, 2),
+            Self::At0x0 => (0, 0),
+            Self::At0x1 => (1, 0),
+            Self::At0x2 => (2, 0),
+            Self::At0x3 => (3, 0),
+            Self::At1x0 => (0, 1),
+            Self::At1x1 => (1, 1),
+            Self::At1x2 => (2, 1),
+            Self::At1x3 => (3, 1),
+            Self::At2x0 => (0, 2),
+            Self::At2x1 => (1, 2),
+            Self::At2x2 => (2, 2),
+            Self::At2x3 => (3, 2),
         }
     }
 }

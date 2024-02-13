@@ -47,8 +47,8 @@ impl OutputPla {
     #[must_use]
     pub fn modify(&self, o: OutputO) -> DataLine {
         match self {
-            OutputPla::Normal => DataLine(u4::new(o.0.value() & 0xf)),
-            OutputPla::Reversed => DataLine(u4::new(o.0.value() & 0xf).reverse_bits()),
+            Self::Normal => DataLine(u4::new(o.0.value() & 0xf)),
+            Self::Reversed => DataLine(u4::new(o.0.value() & 0xf).reverse_bits()),
         }
     }
 }
@@ -67,8 +67,8 @@ pub struct CartridgeSpecific {
 impl Default for CartridgeSpecific {
     fn default() -> Self {
         Self {
-            charge: Default::default(),
-            output_pla: Default::default(),
+            charge: Charge::default(),
+            output_pla: OutputPla::default(),
             rotary_enabled: true,
         }
     }

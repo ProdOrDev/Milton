@@ -267,6 +267,7 @@ use crate::{
     rotary::{ChargePulse, Rotary},
 };
 use arbitrary_int::{u1, u11, u3, u4, u5, u6, Number};
+#[allow(clippy::wildcard_imports)]
 use pla::{Entry, Fixed, *};
 
 /// The 11-bit pin outputs R\[0-10\].
@@ -342,6 +343,7 @@ impl InputK {
         K: keyboard::Agnostic,
     {
         /// Read a column of keys as a 4-bit number from the given keyboard.
+        #[allow(clippy::bool_to_int_with_if)]
         fn read_column<K>(kb: &K, keys: [Key; 4]) -> u4
         where
             K: keyboard::Agnostic,
@@ -658,46 +660,92 @@ impl Tms1100 {
         }
     }
 
+    /// Execute the first set of fixed instructions.
+    ///
+    /// These instructions are branch, call and return.
+    fn exec_fixed_1(&mut self) {
+        match self.fixed {
+            Fixed::Br if self.flags.status => {
+                if !self.flags.call {
+                    self.pa = self.pb;
+                }
+
+                self.ca = self.cb;
+                self.pc = u6::new(self.opcode & 0x3f);
+            }
+            Fixed::Call if self.flags.status => {
+                let prev_pa = self.pa;
+
+                if !self.flags.call {
+                    self.flags.call = true;
+                    self.sr = self.pc;
+                    self.pa = self.pb;
+                    self.cs = self.ca;
+                }
+
+                self.ca = self.cb;
+                self.pb = prev_pa;
+                self.pc = u6::new(self.opcode & 0x3f);
+            }
+            Fixed::Retn => {
+                if self.flags.call {
+                    self.flags.call = false;
+                    self.pc = self.sr;
+                    self.ca = self.cs;
+                }
+
+                self.pa = self.pb;
+            }
+            _ => {}
+        }
+    }
+
+    /// Execute the second set of fixed instructions.
+    ///
+    /// These instructions include every fixed instruction expect branch, call or return.
+    fn exec_fixed_2(&mut self) {
+        match self.fixed {
+            Fixed::Comc => {
+                self.cb ^= u1::MAX;
+            }
+            Fixed::Comx => {
+                self.x ^= u3::MAX;
+            }
+            Fixed::Ldp => {
+                self.pb = self.constant;
+            }
+            Fixed::Ldx => {
+                self.x = u3::new(self.constant.value() >> 1);
+            }
+            Fixed::Rbit => {
+                self.ram_data &= self.cki_latch;
+            }
+            Fixed::Rstr => {
+                let idx = (self.x.value() >> 2) << 4 | self.y.value();
+                self.r.0 &= !(u11::new(1) << idx);
+            }
+            Fixed::Sbit => {
+                self.ram_data |= self.cki_latch ^ u4::new(0xf);
+            }
+            Fixed::Setr => {
+                let idx = (self.x.value() >> 2) << 4 | self.y.value();
+                self.r.0 |= u11::new(1) << idx;
+            }
+            Fixed::Tdo => {
+                self.o.0 = u5::new(u8::from(self.flags.status)) | u5::new(self.a.value());
+            }
+            _ => {}
+        }
+    }
+
     /// Clock (update) this micro-processor.
     ///
     /// This executes a single sub-instruction cycle, 1/6 of an instruction.
+    #[allow(clippy::similar_names)]
     pub fn clock(&mut self, rom: &Rom, ram: &mut Ram) {
         match self.cycle {
             Counter::Cycle0 => {
-                match self.fixed {
-                    Fixed::Br if self.flags.status => {
-                        if !self.flags.call {
-                            self.pa = self.pb;
-                        }
-
-                        self.ca = self.cb;
-                        self.pc = u6::new(self.opcode & 0x3f);
-                    }
-                    Fixed::Call if self.flags.status => {
-                        let prev_pa = self.pa;
-
-                        if !self.flags.call {
-                            self.flags.call = true;
-                            self.sr = self.pc;
-                            self.pa = self.pb;
-                            self.cs = self.ca;
-                        }
-
-                        self.ca = self.cb;
-                        self.pb = prev_pa;
-                        self.pc = u6::new(self.opcode & 0x3f);
-                    }
-                    Fixed::Retn => {
-                        if self.flags.call {
-                            self.flags.call = false;
-                            self.pc = self.sr;
-                            self.ca = self.cs;
-                        }
-
-                        self.pa = self.pb;
-                    }
-                    _ => {}
-                }
+                self.exec_fixed_1();
 
                 self.read_cki();
                 self.ram_data = ram.read(RamAddr::new(self.x, self.y));
@@ -752,42 +800,10 @@ impl Tms1100 {
                     self.ram_data = self.a;
                 }
 
-                match self.fixed {
-                    Fixed::Comc => {
-                        self.cb ^= u1::MAX;
-                    }
-                    Fixed::Comx => {
-                        self.x ^= u3::MAX;
-                    }
-                    Fixed::Ldp => {
-                        self.pb = self.constant;
-                    }
-                    Fixed::Ldx => {
-                        self.x = u3::new(self.constant.value() >> 1);
-                    }
-                    Fixed::Rbit => {
-                        self.ram_data &= self.cki_latch;
-                    }
-                    Fixed::Rstr => {
-                        let idx = (self.x.value() >> 2) << 4 | self.y.value();
-                        self.r.0 &= !(u11::new(1) << idx);
-                    }
-                    Fixed::Sbit => {
-                        self.ram_data |= self.cki_latch ^ u4::new(0xf);
-                    }
-                    Fixed::Setr => {
-                        let idx = (self.x.value() >> 2) << 4 | self.y.value();
-                        self.r.0 |= u11::new(1) << idx;
-                    }
-                    Fixed::Tdo => {
-                        self.o.0 = u5::new(u8::from(self.flags.status)) | u5::new(self.a.value());
-                    }
-                    _ => {}
-                }
+                self.exec_fixed_2();
 
                 ram.write(RamAddr::new(self.x, self.y), self.ram_data);
             }
-            Counter::Cycle3 => { /* Idle */ }
             Counter::Cycle4 => {
                 if self.micro.enables::<AUTA>() {
                     self.a = self.alu.res;
@@ -801,7 +817,7 @@ impl Tms1100 {
 
                 self.next_opcode(rom);
             }
-            Counter::Cycle5 => { /* Idle */ }
+            Counter::Cycle3 | Counter::Cycle5 => { /* Idle */ }
         }
 
         self.cycle.next();
