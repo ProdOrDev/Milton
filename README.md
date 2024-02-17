@@ -1,8 +1,3 @@
-<p align="center">
-    <img src = "media/Logo.svg" width = "100">
-    
-</p>
-
 <div align="center">
 
 # Milton

@@ -1,4 +1,4 @@
-//! Emulation of the Microvision's ROM and RAM chips.
+//! Emulation of the TMS1100's ROM and RAM chips.
 //!
 //! These chips are embedded within the TMS1100 micro-processor and belong to
 //! the specific game cartridges rather than the Microvision handheld itself.
@@ -51,6 +51,28 @@ impl Rom {
     #[must_use]
     pub fn new() -> Self {
         Self { data: [0; 0x800] }
+    }
+
+    /// Copy the data from a slice into this ROM chip.
+    ///
+    /// This technically breaks the Read-Only contract of this chip,
+    /// so this function should be used only for initially loading
+    /// ROM's.
+    ///
+    /// If the given slice is less than 2kb the remaining space will be
+    /// filled with zeroes.
+    ///
+    /// # Panics
+    ///
+    /// If the given slice is greater than 2kb this function will panic.
+    pub fn copy(&mut self, slice: &[u8]) {
+        assert!(
+            slice.len() <= 0x800,
+            "The given data slice if bigger than 2kb."
+        );
+
+        self.data[..slice.len()].copy_from_slice(slice);
+        self.data[slice.len()..].fill(0);
     }
 
     /// Read from this ROM chip at the specified address.
@@ -114,8 +136,13 @@ impl Ram {
         }
     }
 
+    /// Zero out the data contained on this RAM chip.
+    pub fn fill_zero(&mut self) {
+        self.data.fill(u4::new(0));
+    }
+
     /// Randomize the data contained on this RAM chip.
-    pub fn randomize(&mut self) {
+    pub fn fill_random(&mut self) {
         let mut rng = thread_rng();
 
         for val in &mut self.data {

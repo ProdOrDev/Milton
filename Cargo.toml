@@ -2,10 +2,7 @@
 
 resolver = "2"
 
-members = [
-    "core",
-    "gui",
-]
+members = ["core"]
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -14,8 +11,6 @@ unsafe_code = "forbid"
 pedantic = "deny"
 nursery = "deny"
 
-# Clippy rant go brrrrr...
+# A collection of Clippy lints that do more harm than good.
 missing_const_for_fn = "allow"
 new_without_default = "allow"
-module_name_repetitions = "allow"
-bool_to_int_with_if = "allow"
