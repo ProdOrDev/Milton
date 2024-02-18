@@ -63,7 +63,7 @@ impl Ms {
         self.0
     }
 
-    /// Check if the given time, `self`, comes before other `other`.
+    /// Check if the given time, `self`, comes before `other`.
     #[must_use]
     pub(crate) fn is_before(self, other: Self) -> bool {
         self.0 <= other.0
@@ -89,6 +89,7 @@ impl Ms {
 }
 
 /// An abstract (frontend agnostic) hardware interface.
+#[must_use]
 pub struct Interface<'a, L, B, K, R>
 where
     L: display::Api,

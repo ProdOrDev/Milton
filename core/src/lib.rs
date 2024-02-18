@@ -72,7 +72,8 @@ impl Console {
     ///
     /// This function should be called at a rate of 100khz, effectively every
     /// 10 **micro**-seconds.
-    pub fn clock<L, B, K, R>(&mut self, cart: &mut Cartridge, hardware: &mut Interface<L, B, K, R>)
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn clock<L, B, K, R>(&mut self, cart: &mut Cartridge, hardware: Interface<L, B, K, R>)
     where
         L: display::Api,
         B: buzzer::Api,
@@ -161,7 +162,8 @@ impl Console {
     /// # Timing
     ///
     /// This function should be called at the end of every frame.
-    pub fn sync<L, B, K, R>(&mut self, hardware: &mut Interface<L, B, K, R>)
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn sync<L, B, K, R>(&mut self, hardware: Interface<L, B, K, R>)
     where
         L: display::Api,
         B: buzzer::Api,
