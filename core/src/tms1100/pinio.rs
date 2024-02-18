@@ -9,13 +9,19 @@ use arbitrary_int::{u11, u4, u5};
 /// This is mapped, by the cartridge, to various components of the Microvision,
 /// such as the rotary controller, Piezo buzzer, LCD driver, etc. etc.
 #[derive(Debug, Clone, Copy)]
-pub struct R(pub u11);
+pub struct R(pub(crate) u11);
 
 impl R {
     /// Create a new 11-bit pin output.
     #[must_use]
     pub(crate) fn new() -> Self {
         Self(u11::new(0))
+    }
+
+    /// Return the inner 11-bit value of this pin output.
+    #[must_use]
+    pub fn value(&self) -> u11 {
+        self.0
     }
 
     /// Set the nth-bit of this pin output.
@@ -53,13 +59,19 @@ impl R {
 /// output PLA of these pins differently so, this value may be reversed on some
 /// cartridges and normal (un-reversed) on others.
 #[derive(Debug, Clone, Copy)]
-pub struct O(pub u5);
+pub struct O(pub(crate) u5);
 
 impl O {
     /// Create a new 5-bit pin output.
     #[must_use]
     pub(crate) fn new() -> Self {
         Self(u5::new(0))
+    }
+
+    /// Return the inner 5-bit value of this pin output.
+    #[must_use]
+    pub fn value(&self) -> u5 {
+        self.0
     }
 
     /// Set the nth-bit of this pin output.
@@ -96,13 +108,19 @@ impl O {
 /// This is mapped to the currently selected keyboard column and the rotary
 /// controller, if it still has charge enabled.
 #[derive(Debug, Clone, Copy)]
-pub struct K(pub u4);
+pub struct K(pub(crate) u4);
 
 impl K {
     /// Create a new 4-bit pin input.
     #[must_use]
     pub(crate) fn new() -> Self {
         Self(u4::new(0))
+    }
+
+    /// Return the inner 4-bit value of this pin input.
+    #[must_use]
+    pub fn value(&self) -> u4 {
+        self.0
     }
 
     /// Set the nth-bit of this pin input.

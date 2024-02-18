@@ -27,7 +27,7 @@ use arbitrary_int::{u1, u11, u3, u4, u5, u6, Number};
 ///
 /// Technically speaking, this can also be referred to as the Arithmetic Logic Unit
 /// (ALU), however the documents provided about the TMS1100 refer to it as the adder.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Adder {
     /// The 4-bit `P` input of the adder.
     ///
